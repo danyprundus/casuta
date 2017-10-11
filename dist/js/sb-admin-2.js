@@ -700,6 +700,8 @@ function param(name) {
 
 $("#ff,#invoiceDate").change(function (e) {
         saveReceptieHeader();
+        getSavedInvoiceRows($("#ff").val());
+
 });
 
 $("#barcode").keydown(function (e) {
@@ -723,6 +725,31 @@ $("#productQTY").keydown(function (e) {
 
     }
 });
+function getSavedInvoiceRows(docNo){
+    var api = ApiUrl + 'finance/inventory/getReceptiiData/' + MainPlayground + '/' + docNo;
+    var html;
+    response=simpleAjax(api);
+    console.log(response);
+    var obj = $.parseJSON(response);
+    console.log(obj);
+    $.each(obj, function (index, value) {
+        html = '                    <tr class="noprint" id="productRow_' + obj['barcodeID'] + '">\n' +
+            '\n' +
+            '                        <td>' + obj[index]['barcodeID'] + '</td>\n' +
+            '                        <td>' + obj[index]['name'] + '</td>\n' +
+            '                        <td >' + obj[index]['qty'] + '</td>\n' +
+            '                        <td><strong>' + obj[index]['price'] + ' </strong> lei</td>\n' +
+            '                        <td >' + obj[index]['price']*obj[index]['qty'] + ' lei  <a href="javascript:removeRow(' + barcode + ')">Sterg</a> </td>\n' +
+            '                    </tr>\n';
+        $("#productRow").after(html);
+
+
+    });
+
+
+
+}
+
 function saveReceptieBody() {
     var receptiiHeader = form_to_json("#header");
     var receptiiBody = form_to_json("#invoiceBody");
@@ -809,14 +836,16 @@ function getProductNameByBarcode(barcode) {
 
 }
 function simpleAjax(api){
-    $.ajax({
+    var response=$.ajax({
+        async: false,
         url: api,
         type: 'GET',
+        dataType: 'json',
         success: function (data) {
             console.log(api);
         }
-    });
-
+    }).responseText;
+    return response;
 }
 
 //products_in end
