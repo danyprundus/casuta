@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PublishConfigData" autoUpload="Always" promptOnRemoteOverwrite="CHECK_CONTENT" serverName="mamp" filePermissions="509" folderPermissions="493" autoUploadExternalChanges="true">
+    <serverData>
+      <paths name="mamp">
+        <serverdata>
+          <mappings>
+            <mapping local="$PROJECT_DIR$" web="casuta" />
+          </mappings>
+        </serverdata>
+      </paths>
+    </serverData>
+    <option name="myAutoUpload" value="ALWAYS" />
+  </component>
+</project>

@@ -11,7 +11,7 @@ namespace builder;
 
 class builder
 {
-    public function outputOptions($array)
+    public  static function outputOptions($array)
     {
         //print_r($array);
         foreach ($array as $key => $val) {
@@ -136,5 +136,10 @@ class builder
                 <?
             }
         }
+    }
+
+    public static  function jsonRequest($url){
+        $data = json_decode(file_get_contents($url));
+        return $data;
     }
 }

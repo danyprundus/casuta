@@ -6,6 +6,7 @@ $command = $_GET['command'];
 
 $finance = new \finance\finance();
 $builder = new \builder\builder();
+$productTypes = \builder\builder::jsonRequest(API_URL . "finance/inventory/getProductTypes/" . Playground );
 ?>
 <div id="wrapper">
 
@@ -45,7 +46,10 @@ $builder = new \builder\builder();
                         ff <input type="text" name="ff" id="ff">
                     </td>
                     <td>
-                        Data Factura <input type="text" name="invoiceDate" id="invoiceDate">
+                        Data Factura <input type="text" name="invoiceDate"   id="invoiceDate" value="<?=date("d-m-Y",time())?>" class="datepicker">
+                    </td>
+                    <td>
+                        Valoare Factura <input type="text" name="invoiceValue" id="invoiceValue">
                     </td>
                 </tr>
 
@@ -59,19 +63,29 @@ $builder = new \builder\builder();
 
                     <th>BarCode</th>
                     <th>Nume</th>
+                    <th>Tip </th>
                     <th>Cantitate </th>
                     <th>Pret per bucata</th>
                     <th>Total</th>
                 </tr>
 
                 <?
-                $data = json_decode(file_get_contents(API_URL . "finance/inventory/totalsForProducts/" . Playground ));
-                $data = json_decode($data->data);
                     ?>
                     <tr class="noprint" id="productRow">
 
                         <td><input type="text" name="barcode"  id="barcode" > </td>
-                        <td id="productName"></td>
+                        <td>
+                            <input type="text" id="productName" name="productName">
+                        </td>
+                        <td >
+                            <select name="productType" id="productType">
+                                <?
+                                foreach ($productTypes as $type){
+                                    ?><option value="<?php echo $type->id ?>"><?php echo $type->typeName ?></option><?
+                                }
+                                ?>
+                            </select>
+                        </td>
                         <td >
                             <input type="text" id="productQTY" name="qty">
                         </td>
@@ -81,6 +95,7 @@ $builder = new \builder\builder();
 
             </table>
             </form>
+
     </div>
 
 
@@ -109,5 +124,14 @@ $builder = new \builder\builder();
 <?php
 //test git
 require "inc/footer.php";
+if($_GET['docNo']){
+    ?>
+    <script>
+        $("#ff").val('<?=$_GET['docNo']?>').focus().trigger('change');
+        $("#company").focus();
+    </script>
+    <?
+}
+
 ?>
 

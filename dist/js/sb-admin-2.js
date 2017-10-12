@@ -699,8 +699,18 @@ function param(name) {
 //products in start
 
 $("#ff,#invoiceDate").change(function (e) {
-        saveReceptieHeader();
+    if(checkifRecords){
+        getReceptieHeader($("#ff").val());
         getSavedInvoiceRows($("#ff").val());
+    }
+    else{
+        saveReceptieHeader();
+    }
+
+});
+
+$("#invoiceValue").change(function (e) {
+        saveReceptieHeader();
 
 });
 
@@ -712,6 +722,12 @@ $("#barcode").keydown(function (e) {
     }
 });
 
+function checkifRecords(){
+ if($('tr.noprint').length >1){
+     return true;
+ }
+ return false;
+}
 
 $("#productQTY").keydown(function (e) {
     if (e.keyCode == 13) {
@@ -725,21 +741,33 @@ $("#productQTY").keydown(function (e) {
 
     }
 });
-function getSavedInvoiceRows(docNo){
+function getReceptieHeader(docNo) {
+    var api = ApiUrl + 'finance/inventory/getReceptiiHeader/' + MainPlayground + '/' + docNo;
+    var html;
+    response = simpleAjax(api);
+    var obj = $.parseJSON(response);
+    $.each(obj, function (index, value) {
+        $("#invoiceValue").val( obj[index]['invoiceValue']);
+        $("#invoiceDate").val( obj[index]['invoiceDate']);
+    });
+}
+
+
+    function getSavedInvoiceRows(docNo){
     var api = ApiUrl + 'finance/inventory/getReceptiiData/' + MainPlayground + '/' + docNo;
     var html;
     response=simpleAjax(api);
     console.log(response);
     var obj = $.parseJSON(response);
-    console.log(obj);
     $.each(obj, function (index, value) {
-        html = '                    <tr class="noprint" id="productRow_' + obj['barcodeID'] + '">\n' +
+        html = '                    <tr class="noprint" id="productRow_' + obj[index]['barcodeID'] + '">\n' +
             '\n' +
             '                        <td>' + obj[index]['barcodeID'] + '</td>\n' +
             '                        <td>' + obj[index]['name'] + '</td>\n' +
             '                        <td >' + obj[index]['qty'] + '</td>\n' +
+            '                        <td >' + obj[index]['type'] + '</td>\n' +
             '                        <td><strong>' + obj[index]['price'] + ' </strong> lei</td>\n' +
-            '                        <td >' + obj[index]['price']*obj[index]['qty'] + ' lei  <a href="javascript:removeRow(' + barcode + ')">Sterg</a> </td>\n' +
+            '                        <td >' + obj[index]['price']*obj[index]['qty'] + ' lei  <a href="javascript:removeRow(' + obj[index]['barcodeID'] + ')">Sterg</a> </td>\n' +
             '                    </tr>\n';
         $("#productRow").after(html);
 
@@ -765,7 +793,7 @@ function saveReceptieHeader() {
 function clearProductsINFields() {
     $('#productQTY').val('');
     $('#price').html('');
-    $('#productName').html('');
+    $('#productName').val('');
     $('#barcode').html('');
     $('#barcode').val('');
     $(".total").html('')
@@ -774,7 +802,7 @@ function clearProductsINFields() {
 function duplicateRowforProductsIN() {
     var qty = $('#productQTY').val();
     var price = $('#price').html();
-    var name = $('#productName').html();
+    var name = $('#productName').val();
     var barcode = $('#barcode').val();
     var total = price * qty;
 
@@ -783,6 +811,7 @@ function duplicateRowforProductsIN() {
         '\n' +
         '                        <td>' + barcode + '</td>\n' +
         '                        <td>' + name + '</td>\n' +
+        '                        <td >' + type + '</td>\n' +
         '                        <td >' + qty + '</td>\n' +
         '                        <td><strong>' + price + ' </strong> lei</td>\n' +
         '                        <td ><a href="javascript:removeRow(' + barcode + ')">Sterg</a> </td>\n' +
@@ -826,7 +855,7 @@ function getProductNameByBarcode(barcode) {
                 jsonArray.push(value);
             });
             console.log(jsonArray[0]);
-            $("#productName").html(jsonArray[0]);
+            $("#productName").val(jsonArray[0]);
             $("#price").html(jsonArray[1]);
             //;
 
